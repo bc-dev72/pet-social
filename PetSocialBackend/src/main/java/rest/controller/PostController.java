@@ -27,8 +27,8 @@ public class PostController {
 	@Autowired
 	private PostService postService;
 
-	@GetMapping("/post/{{postId}}")
-	public ResponseEntity<Object> getPost(@RequestHeader(value="Authorization") String authHeader, @PathVariable("postId") String postId) {
+	@GetMapping("/post/{postId}")
+	public ResponseEntity<Object> getPost(@RequestHeader(value="Authorization", required=false) String authHeader, @PathVariable("postId") String postId) {
 		TokenAccountData tokenData = null;
 		if(authHeader != null) 
 			tokenData = TokenManager.getTokenAccountData(GeneralUtil.cleanAuthHeader(authHeader));
@@ -42,7 +42,7 @@ public class PostController {
 		}
 	}
 
-	@PostMapping("/api/post/{{postId}}/vote")
+	@PostMapping("/api/post/{postId}/vote")
 	public ResponseEntity<Object> vote(@RequestHeader(value="Authorization") String authHeader, @PathVariable("postId") String postId, @RequestBody PostVoteRequest request) {
 		TokenAccountData tokenData = TokenManager.getTokenAccountData(GeneralUtil.cleanAuthHeader(authHeader));
 		try {
@@ -54,7 +54,7 @@ public class PostController {
 		}
 	}
 	
-	@PostMapping("/api/post/{{postId}}/comment")
+	@PostMapping("/api/post/{postId}/comment")
 	public ResponseEntity<Object> comment(@RequestHeader(value="Authorization") String authHeader, @PathVariable("postId") String postId, @RequestBody PostCommentRequest request) {
 		TokenAccountData tokenData = TokenManager.getTokenAccountData(GeneralUtil.cleanAuthHeader(authHeader));
 		try {
@@ -66,7 +66,7 @@ public class PostController {
 		}
 	}
 	
-	@PostMapping("/api/post/{{postId}}/favorite")
+	@PostMapping("/api/post/{postId}/favorite")
 	public ResponseEntity<Object> favorite(@RequestHeader(value="Authorization") String authHeader, @PathVariable("postId") String postId, @RequestBody PostFavoriteRequest request) {
 		TokenAccountData tokenData = TokenManager.getTokenAccountData(GeneralUtil.cleanAuthHeader(authHeader));
 		try {

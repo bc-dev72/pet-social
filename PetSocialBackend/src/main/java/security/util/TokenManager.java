@@ -56,6 +56,7 @@ public class TokenManager {
 		token.setStartTime(LocalDateTime.now());
 		token.setEndTime(token.getStartTime().plusHours(16));
 		token.setAccountData(accountData);
+		
 		return token;
 	}
 	
