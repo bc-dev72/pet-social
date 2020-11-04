@@ -85,6 +85,7 @@ public class AccountService {
 		
 		TokenAccountData tokenData = new TokenAccountData();
 		tokenData.setAccountId(data.getAccountId());
+		tokenData.setUsername(data.getUsername());
 		String token = TokenManager.login(tokenData);
 
 		SignInResponse response = new SignInResponse();
