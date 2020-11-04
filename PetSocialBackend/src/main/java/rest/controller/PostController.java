@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import rest.controller.request.posts.PostCommentRequest;
@@ -27,7 +28,7 @@ public class PostController {
 	@Autowired
 	private PostService postService;
 
-	@GetMapping("/post/{postId}")
+	@GetMapping("/public/post/{postId}")
 	public ResponseEntity<Object> getPost(@RequestHeader(value="Authorization", required=false) String authHeader, @PathVariable("postId") String postId) {
 		TokenAccountData tokenData = null;
 		if(authHeader != null) 

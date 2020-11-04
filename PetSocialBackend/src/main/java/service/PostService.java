@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +18,11 @@ import rest.controller.request.posts.PostCommentRequest;
 import rest.controller.request.posts.PostFavoriteRequest;
 import rest.controller.request.posts.PostRequest;
 import rest.controller.request.posts.PostVoteRequest;
-import rest.controller.response.posts.PostCommentResponse;
 import rest.controller.response.posts.PostResponse;
 import security.util.TokenAccountData;
 import service.error.NotFoundError;
 import service.error.ServiceError;
+import util.FrontEndModelUtil;
 import util.thread.UpdaterProtection;
 
 @Service
@@ -60,7 +59,7 @@ public class PostService {
 		postDataRepo.save(postData);
 		postRepo.save(post);
 		
-		return this.getPostResponse(tokenData.getAccountId(), post, postData);
+		return FrontEndModelUtil.createPostResponse(tokenData.getAccountId(), post, postData);
 	}
 	
 	public PostResponse getPost(TokenAccountData tokenData, String postId) throws ServiceError, NotFoundError {
@@ -74,7 +73,7 @@ public class PostService {
 		
 		if(post == null)
 			throw new NotFoundError("Not found");
-		return this.getPostResponse(tokenData.getAccountId(), post, postData);
+		return FrontEndModelUtil.createPostResponse(tokenData.getAccountId(), post, postData);
 	}
 	
 	public PostResponse votePost(TokenAccountData tokenData, String postId, PostVoteRequest request) throws ServiceError, NotFoundError {
@@ -98,7 +97,7 @@ public class PostService {
 		
 		postDataRepo.save(postData);
 		UpdaterProtection.requestRelease("POST", postId, true);
-		return this.getPostResponse(tokenData.getAccountId(), post, postData);
+		return FrontEndModelUtil.createPostResponse(tokenData.getAccountId(), post, postData);
 	}
 	
 	public PostResponse makeComment(TokenAccountData tokenData, String postId, PostCommentRequest request) throws ServiceError, NotFoundError{
@@ -128,7 +127,7 @@ public class PostService {
 		
 		postDataRepo.save(postData);
 		UpdaterProtection.requestRelease("POST", postId, true);
-		return this.getPostResponse(tokenData.getAccountId(), post, postData);
+		return FrontEndModelUtil.createPostResponse(tokenData.getAccountId(), post, postData);
 	}
 	
 	public PostResponse favoritePost(TokenAccountData tokenData, String postId, PostFavoriteRequest request) throws ServiceError, NotFoundError {
@@ -148,43 +147,7 @@ public class PostService {
 
 		postDataRepo.save(postData);
 		UpdaterProtection.requestRelease("POST", postId, true);
-		return this.getPostResponse(tokenData.getAccountId(), post, postData);
-	}
-	
-	
-	private PostResponse getPostResponse(String accountId, Post post, PostData postData) {
-		PostResponse response = new PostResponse();
-		response.setDesc(post.getDescription());
-		response.setImage(post.getImage());
-		response.setPostId(post.getPostId());
-		response.setDateString(post.getPostTime().getMonthValue()+"/"+post.getPostTime().getDayOfMonth()+"/"+post.getPostTime().getYear());
-		
-		List<PostCommentResponse> comments = new ArrayList<>();
-		for(PostComment comment : postData.getComments()) {
-			PostCommentResponse commentResponse = new PostCommentResponse();
-			commentResponse.setComment(comment.getComment());
-			commentResponse.setDateString(comment.getTime().getMonthValue()+"/"+comment.getTime().getDayOfMonth()+"/"+comment.getTime().getYear());
-			commentResponse.setUser(comment.getUser());
-			comments.add(commentResponse);
-		}
-		response.setComments(comments);
-		
-		int totalVotes = 0;
-		for(String s : postData.getVotes().keySet()) {
-			totalVotes+=postData.getVotes().get(s);
-		}
-		
-		int userVote = 0;
-		if(postData.getVotes().containsKey(accountId))
-			userVote = postData.getVotes().get(accountId);
-		
-		int favoriteCount = postData.getFavorites().size();
-			
-		response.setVoteCount(totalVotes);
-		response.setCurrentVote(userVote);
-		response.setTotalFavorites(favoriteCount);
-		
-		return response;
+		return FrontEndModelUtil.createPostResponse(tokenData.getAccountId(), post, postData);
 	}
 	
 	private void getAccess(String postId) {
