@@ -35,7 +35,7 @@ public class PostService {
 	private PostRepo postRepo;
 	
 	
-	public PostResponse createPost(TokenAccountData tokenData, PostRequest request) throws ServiceError{
+	public PostResponse createPost(TokenAccountData tokenData, PostRequest request) throws ServiceError {
 		if(request.getDesc() == null || request.getImage() == null)
 			throw new ServiceError("Fill in all fields");
 		
@@ -60,6 +60,26 @@ public class PostService {
 		postRepo.save(post);
 		
 		return FrontEndModelUtil.createPostResponse(tokenData.getAccountId(), post, postData);
+	}
+	
+	public void deletePost(TokenAccountData tokenData, String postId) throws ServiceError, NotFoundError {
+		getAccess(postId);
+		Post post = postRepo.findByPostId(postId);
+		if(post == null) {
+			UpdaterProtection.requestRelease("POST", postId, true);
+			throw new NotFoundError("Not found");
+		}
+		if(!post.getAccountId().equals(tokenData.getAccountId())) {
+			UpdaterProtection.requestRelease("POST", postId, true);
+			throw new ServiceError("This is not your post");
+		}
+		
+		PostData postData = postDataRepo.findByPostId(postId);
+
+		postRepo.delete(post);
+		if(postData != null)
+			postDataRepo.delete(postData);
+		UpdaterProtection.requestRelease("POST", postId, true);
 	}
 	
 	public PostResponse getPost(TokenAccountData tokenData, String postId) throws ServiceError, NotFoundError {
