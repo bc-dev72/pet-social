@@ -8,5 +8,15 @@ public class GeneralUtil {
         java.util.regex.Matcher m = p.matcher(email);
         return m.matches();
     }
+    
+	public static String cleanAuthHeader(String token) {
+		if(token == null)
+    		token = "";
+    	if(token.startsWith("Bearer"))
+    		token = token.replaceFirst("Bearer", "").trim();
+    	else 
+    		token = "";
+    	return token;
+	}
 
 }
