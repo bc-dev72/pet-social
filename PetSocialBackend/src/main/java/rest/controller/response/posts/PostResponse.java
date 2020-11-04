@@ -11,6 +11,7 @@ public class PostResponse {
 
 	private int voteCount;
 	private int currentVote; //the signed in user vote
+	private int totalFavorites;
 	
 	private List<PostCommentResponse> comments;
 
@@ -55,5 +56,11 @@ public class PostResponse {
 	}
 	public void setDateString(String dateString) {
 		this.dateString = dateString;
+	}
+	public int getTotalFavorites() {
+		return totalFavorites;
+	}
+	public void setTotalFavorites(int totalFavorites) {
+		this.totalFavorites = totalFavorites;
 	}
 }

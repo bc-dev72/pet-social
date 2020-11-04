@@ -94,8 +94,7 @@ public class PostService {
 		if(vote > 0)
 			vote = 1;
 		
-		
-		postData.getVotes().put(tokenData.getUsername(), request.getValue());
+		postData.getVotes().put(tokenData.getAccountId(), request.getValue());
 		
 		postDataRepo.save(postData);
 		UpdaterProtection.requestRelease("POST", postId, true);
@@ -178,9 +177,12 @@ public class PostService {
 		int userVote = 0;
 		if(postData.getVotes().containsKey(accountId))
 			userVote = postData.getVotes().get(accountId);
+		
+		int favoriteCount = postData.getFavorites().size();
 			
 		response.setVoteCount(totalVotes);
 		response.setCurrentVote(userVote);
+		response.setTotalFavorites(favoriteCount);
 		
 		return response;
 	}

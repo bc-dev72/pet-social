@@ -5,7 +5,7 @@ import java.util.HashSet;
 
 public class UpdaterProtection {
 	
-	private static HashMap<String, HashSet<String>> accessed;
+	private static HashMap<String, HashSet<String>> accessed = new HashMap<>();
 	
 
 	public static synchronized boolean requestRelease(String type, String postId, boolean release) {
