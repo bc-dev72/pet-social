@@ -4,6 +4,8 @@
 
 Pet Social is a simple social media for posting pictures of your pets. You can create your own posts, up/down vote posts, favorite posts and comment on posts.
 
+Link to trello board: https://trello.com/b/Mv5plmrQ/pet-social
+
 ## Page Summary
 
 ### /petsocial/home
