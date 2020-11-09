@@ -55,21 +55,6 @@ public class PostController {
 	
 	}
 
-	@GetMapping("/public/post/{postId}")
-	public ResponseEntity<Object> getPost(@RequestHeader(value="Authorization", required=false) String authHeader, @PathVariable("postId") String postId) {
-		TokenAccountData tokenData = null;
-		if(authHeader != null) 
-			tokenData = TokenManager.getTokenAccountData(GeneralUtil.cleanAuthHeader(authHeader));
-		
-		try {
-			return ResponseEntity.ok(postService.getPost(tokenData, postId));
-		} catch(ServiceError error) {
-			return ResponseEntity.badRequest().body(new BasicResponse(error.getErrorMessage()));
-		} catch(NotFoundError error) {
-			return ResponseEntity.status(404).body(new BasicResponse(error.getErrorMessage()));
-		}
-	}
-
 	@PostMapping("/api/post/{postId}/vote")
 	public ResponseEntity<Object> vote(@RequestHeader(value="Authorization") String authHeader, @PathVariable("postId") String postId, @RequestBody PostVoteRequest request) {
 		TokenAccountData tokenData = TokenManager.getTokenAccountData(GeneralUtil.cleanAuthHeader(authHeader));
