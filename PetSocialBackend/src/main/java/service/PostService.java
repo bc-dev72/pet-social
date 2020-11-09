@@ -38,7 +38,8 @@ public class PostService {
 	public PostResponse createPost(TokenAccountData tokenData, PostRequest request) throws ServiceError {
 		if(request.getDesc() == null || request.getImage() == null)
 			throw new ServiceError("Fill in all fields");
-		
+		if(request.getDesc().trim().length() == 0)
+			throw new ServiceError("Description too short"); 
 		if(request.getDesc().trim().length() > 200)
 			throw new ServiceError("Please make a shorter description");
 		
@@ -66,11 +67,11 @@ public class PostService {
 		getAccess(postId);
 		Post post = postRepo.findByPostId(postId);
 		if(post == null) {
-			UpdaterProtection.requestRelease("POST", postId, true);
+			this.releaseAccess(postId);
 			throw new NotFoundError("Not found");
 		}
 		if(!post.getAccountId().equals(tokenData.getAccountId())) {
-			UpdaterProtection.requestRelease("POST", postId, true);
+			this.releaseAccess(postId);
 			throw new ServiceError("This is not your post");
 		}
 		
@@ -79,7 +80,7 @@ public class PostService {
 		postRepo.delete(post);
 		if(postData != null)
 			postDataRepo.delete(postData);
-		UpdaterProtection.requestRelease("POST", postId, true);
+		this.releaseAccess(postId);
 	}
 	
 	public PostResponse getPost(TokenAccountData tokenData, String postId) throws ServiceError, NotFoundError {
@@ -103,7 +104,7 @@ public class PostService {
 		PostData postData = this.getPostData(postId);
 		
 		if(post == null) {
-			UpdaterProtection.requestRelease("POST", postId, true);
+			this.releaseAccess(postId);
 			throw new NotFoundError("Not found");
 		}
 		
@@ -116,7 +117,7 @@ public class PostService {
 		postData.getVotes().put(tokenData.getAccountId(), request.getValue());
 		
 		postDataRepo.save(postData);
-		UpdaterProtection.requestRelease("POST", postId, true);
+		this.releaseAccess(postId);
 		return FrontEndModelUtil.createPostResponse(tokenData.getAccountId(), post, postData);
 	}
 	
@@ -134,7 +135,7 @@ public class PostService {
 		Post post = postRepo.findByPostId(postId);
 		PostData postData = this.getPostData(postId);
 		if(post == null) {
-			UpdaterProtection.requestRelease("POST", postId, true);
+			this.releaseAccess(postId);
 			throw new NotFoundError("Not found");
 		}
 		
@@ -146,7 +147,7 @@ public class PostService {
 		postData.getComments().add(comment);
 		
 		postDataRepo.save(postData);
-		UpdaterProtection.requestRelease("POST", postId, true);
+		this.releaseAccess(postId);
 		return FrontEndModelUtil.createPostResponse(tokenData.getAccountId(), post, postData);
 	}
 	
@@ -156,7 +157,7 @@ public class PostService {
 		Post post = postRepo.findByPostId(postId);
 		PostData postData = this.getPostData(postId);
 		if(post == null) {
-			UpdaterProtection.requestRelease("POST", postId, true);
+			this.releaseAccess(postId);
 			throw new NotFoundError("Not found");
 		}
 		
@@ -166,7 +167,7 @@ public class PostService {
 			postData.getFavorites().remove(tokenData.getAccountId());
 
 		postDataRepo.save(postData);
-		UpdaterProtection.requestRelease("POST", postId, true);
+		this.releaseAccess(postId);
 		return FrontEndModelUtil.createPostResponse(tokenData.getAccountId(), post, postData);
 	}
 	
@@ -176,6 +177,10 @@ public class PostService {
 			waiting = UpdaterProtection.requestRelease("POST", postId, false);
 			try {Thread.sleep(100);} catch (InterruptedException e) {}
 		}
+	}
+	
+	private void releaseAccess(String postId) {
+		UpdaterProtection.requestRelease("POST", postId, true);
 	}
 	
 	private PostData getPostData(String postId) {

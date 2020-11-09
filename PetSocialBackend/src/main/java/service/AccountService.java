@@ -37,6 +37,7 @@ public class AccountService {
 		if(request == null ||request.getEmail() == null || request.getUsername() == null || request.getPassword() == null)
 			throw new ServiceError("Please fill in all fields");
 		
+		//All data that will be used in queries to be stored in lower case and trimmed
 		String cleanedEmail = request.getEmail().toLowerCase().trim();
 		String cleanedUsername = request.getUsername().toLowerCase().trim();
 		
@@ -82,7 +83,6 @@ public class AccountService {
 	}
 	
 	private SignInResponse signIn(AccountData data) {
-		
 		TokenAccountData tokenData = new TokenAccountData();
 		tokenData.setAccountId(data.getAccountId());
 		tokenData.setUsername(data.getUsername());
@@ -90,6 +90,7 @@ public class AccountService {
 
 		SignInResponse response = new SignInResponse();
 		response.setToken(token);
+		response.setUsername(data.getUsername());
 		return response;
 	}
 	

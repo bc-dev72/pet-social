@@ -8,6 +8,7 @@ public class PostResponse {
 	private String desc;
 	private String image;
 	private String dateString;
+	private String username;
 
 	private int voteCount;
 	private int currentVote; //the signed in user vote
@@ -15,6 +16,8 @@ public class PostResponse {
 	
 	private List<PostCommentResponse> comments;
 
+	private boolean favorited;
+	
 	public String getPostId() {
 		return postId;
 	}
@@ -62,5 +65,17 @@ public class PostResponse {
 	}
 	public void setTotalFavorites(int totalFavorites) {
 		this.totalFavorites = totalFavorites;
+	}
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	public boolean isFavorited() {
+		return favorited;
+	}
+	public void setFavorited(boolean favorited) {
+		this.favorited = favorited;
 	}
 }

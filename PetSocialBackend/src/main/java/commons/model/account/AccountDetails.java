@@ -14,7 +14,7 @@ public class AccountDetails {
 	private String accountId;
 	
 	private HashSet<String> followingList;
-
+	
 	public String getId() {
 		return id;
 	}

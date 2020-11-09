@@ -18,6 +18,7 @@ public class FrontEndModelUtil {
 		response.setImage(post.getImage());
 		response.setPostId(post.getPostId());
 		response.setDateString(post.getPostTime().getMonthValue()+"/"+post.getPostTime().getDayOfMonth()+"/"+post.getPostTime().getYear());
+		response.setUsername(post.getUserPosted());
 		
 		List<PostCommentResponse> comments = new ArrayList<>();
 		for(PostComment comment : postData.getComments()) {
@@ -39,10 +40,12 @@ public class FrontEndModelUtil {
 			userVote = postData.getVotes().get(accountId);
 		
 		int favoriteCount = postData.getFavorites().size();
+		boolean favorited = postData.getFavorites().contains(accountId);
 			
 		response.setVoteCount(totalVotes);
 		response.setCurrentVote(userVote);
 		response.setTotalFavorites(favoriteCount);
+		response.setFavorited(favorited);
 		
 		return response;
 	}

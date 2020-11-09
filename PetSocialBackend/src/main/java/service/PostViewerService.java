@@ -33,24 +33,23 @@ public class PostViewerService {
 		if(tokenData != null)
 			accountId = tokenData.getAccountId();
 		
-		Page<Post> postsResults = postRepo.findAll(PageRequest.of(pageNumber, 5, Sort.by(Sort.Direction.ASC, "postTime")));
+		Page<Post> postsResults = postRepo.findAll(PageRequest.of(pageNumber, 5, Sort.by(Sort.Direction.DESC, "postTime")));
 		List<Post> posts = postsResults.getContent();
 		
 		HashMap<String, PostData> postDataMap = getPostDataForPosts(posts);
 		
 		List<PostResponse> response = new ArrayList<>();
-		for(Post post : posts) {
+		for(Post post : posts) 
 			response.add(FrontEndModelUtil.createPostResponse(accountId, post, postDataMap.get(post.getPostId())));
-		}
 		return response;
 	}
 	
-	public List<PostResponse> getPostsForUser(TokenAccountData tokenData, String userName) {
+	public List<PostResponse> getPostsForUser(TokenAccountData tokenData, String username, int pageNumber, String lastPost) {
 		String accountId = "";
 		if(tokenData != null)
 			accountId = tokenData.getAccountId();
 		
-		List<Post> posts = postRepo.findByUserPosted(userName);
+		List<Post> posts = postRepo.findByUserPostedOrderByPostTimeDesc(username, PageRequest.of(pageNumber, 10));
 		HashMap<String, PostData> postDataMap = getPostDataForPosts(posts);
 		
 		List<PostResponse> response = new ArrayList<>();

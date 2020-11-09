@@ -28,5 +28,13 @@ public class PostViewerController {
 		return ResponseEntity.ok(postViewerService.getAllPosts(tokenData, pageNumber, lastPost));
 	}
 	
+	@GetMapping("/profile")
+	public ResponseEntity<Object> getPostsForProfile(@RequestHeader(value="Authorization", required=false) String authHeader, @RequestParam("username") String username, @RequestParam("pageNumber") int pageNumber,  @RequestParam(value="lastPost", required=false) String lastPost) {
+		TokenAccountData tokenData = null;
+		if(authHeader != null) 
+			tokenData = TokenManager.getTokenAccountData(GeneralUtil.cleanAuthHeader(authHeader));
+		return ResponseEntity.ok(postViewerService.getPostsForUser(tokenData, username, pageNumber, lastPost));
+	}
+	
 
 }

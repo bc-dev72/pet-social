@@ -27,6 +27,33 @@ public class PostController {
 	
 	@Autowired
 	private PostService postService;
+	
+	@PostMapping("/api/createpost")
+	public ResponseEntity<Object> favorite(@RequestHeader(value="Authorization") String authHeader, @RequestBody PostRequest request) {
+		TokenAccountData tokenData = TokenManager.getTokenAccountData(GeneralUtil.cleanAuthHeader(authHeader));
+		try {
+			return ResponseEntity.ok(postService.createPost(tokenData, request));
+		} catch(ServiceError error) {
+			return ResponseEntity.badRequest().body(new BasicResponse(error.getErrorMessage()));
+		}
+	}
+	
+	@DeleteMapping("/api/deletepost/{postId}")
+	public ResponseEntity<Object> delete(@RequestHeader(value="Authorization") String authHeader, @PathVariable("postId") String postId) {
+		TokenAccountData tokenData = TokenManager.getTokenAccountData(GeneralUtil.cleanAuthHeader(authHeader));
+		try {
+			postService.deletePost(tokenData, postId);
+			return ResponseEntity.ok(new BasicResponse("Good"));
+		} catch(ServiceError error) {
+			return ResponseEntity.badRequest().body(new BasicResponse(error.getErrorMessage()));
+		} catch(NotFoundError error) {
+			return ResponseEntity.status(404).body(new BasicResponse(error.getErrorMessage()));
+		} catch(Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(new BasicResponse("Unexpected error occurred"));
+		}
+	
+	}
 
 	@GetMapping("/public/post/{postId}")
 	public ResponseEntity<Object> getPost(@RequestHeader(value="Authorization", required=false) String authHeader, @PathVariable("postId") String postId) {
@@ -77,30 +104,6 @@ public class PostController {
 		} catch(NotFoundError error) {
 			return ResponseEntity.status(404).body(new BasicResponse(error.getErrorMessage()));
 		}
-	}
-	
-	@PostMapping("/api/createpost")
-	public ResponseEntity<Object> favorite(@RequestHeader(value="Authorization") String authHeader, @RequestBody PostRequest request) {
-		TokenAccountData tokenData = TokenManager.getTokenAccountData(GeneralUtil.cleanAuthHeader(authHeader));
-		try {
-			return ResponseEntity.ok(postService.createPost(tokenData, request));
-		} catch(ServiceError error) {
-			return ResponseEntity.badRequest().body(new BasicResponse(error.getErrorMessage()));
-		}
-	}
-	
-	@DeleteMapping("/api/deletepost/{postid}")
-	public ResponseEntity<Object> delete(@RequestHeader(value="Authorization") String authHeader, @PathVariable("postId") String postId) {
-		TokenAccountData tokenData = TokenManager.getTokenAccountData(GeneralUtil.cleanAuthHeader(authHeader));
-		try {
-			postService.deletePost(tokenData, postId);
-			return ResponseEntity.ok(new BasicResponse("Good"));
-		} catch(ServiceError error) {
-			return ResponseEntity.badRequest().body(new BasicResponse(error.getErrorMessage()));
-		} catch(NotFoundError error) {
-			return ResponseEntity.status(404).body(new BasicResponse(error.getErrorMessage()));
-		}
-	
 	}
 	
 	
