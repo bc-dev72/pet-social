@@ -13,6 +13,9 @@ public class AccountDetails {
 	
 	private String accountId;
 	
+	private String profilePicture;
+	private String bio;
+	
 	private HashSet<String> followingList;
 	
 	public String getId() {
@@ -32,5 +35,17 @@ public class AccountDetails {
 	}
 	public void setFollowingList(HashSet<String> followingList) {
 		this.followingList = followingList;
+	}
+	public String getProfilePicture() {
+		return profilePicture;
+	}
+	public void setProfilePicture(String profilePicture) {
+		this.profilePicture = profilePicture;
+	}
+	public String getBio() {
+		return bio;
+	}
+	public void setBio(String bio) {
+		this.bio = bio;
 	}
 }

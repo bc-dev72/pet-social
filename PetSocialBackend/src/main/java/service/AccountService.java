@@ -19,6 +19,7 @@ import security.util.TokenAccountData;
 import security.util.TokenManager;
 import service.error.ServiceError;
 import util.GeneralUtil;
+import util.thread.DataCache;
 
 @Service
 public class AccountService {
@@ -33,7 +34,6 @@ public class AccountService {
 	private AccountDetailsRepo accountDetailsRepo;
 	
 	public SignInResponse signUp(SignUpRequest request) throws ServiceError {
-		//check inputs
 		if(request == null ||request.getEmail() == null || request.getUsername() == null || request.getPassword() == null)
 			throw new ServiceError("Please fill in all fields");
 		
@@ -62,11 +62,13 @@ public class AccountService {
 		AccountDetails accountDetails = new AccountDetails();
 		accountDetails.setAccountId(data.getAccountId());
 		accountDetails.setFollowingList(new HashSet<>());
+		accountDetails.setProfilePicture("");
+		accountDetails.setBio("");
 		
 		accountDataRepo.save(data);
 		accountDetailsRepo.save(accountDetails);
 		
-		return this.signIn(data);
+		return this.signIn(data, accountDetails);
 	}
 	
 	public SignInResponse signIn(SignInRequest request) throws ServiceError {
@@ -79,14 +81,18 @@ public class AccountService {
 		if(data == null || !encoder.matches(request.getPassword(), data.getPassword()))
 			throw new ServiceError("Email or password is incorrect");
 
-		return signIn(data);
+		AccountDetails details = accountDetailsRepo.findByAccountId(data.getAccountId());
+		
+		return signIn(data, details);
 	}
 	
-	private SignInResponse signIn(AccountData data) {
+	private SignInResponse signIn(AccountData data, AccountDetails details) {
 		TokenAccountData tokenData = new TokenAccountData();
 		tokenData.setAccountId(data.getAccountId());
 		tokenData.setUsername(data.getUsername());
 		String token = TokenManager.login(tokenData);
+		
+		DataCache.setData(DataCache.START_FOLLOWERS+data.getAccountId(), details.getFollowingList());
 
 		SignInResponse response = new SignInResponse();
 		response.setToken(token);

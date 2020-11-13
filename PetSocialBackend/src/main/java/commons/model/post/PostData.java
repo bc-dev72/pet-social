@@ -1,5 +1,6 @@
 package commons.model.post;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,6 +15,7 @@ public class PostData {
 	private String id;
 	
 	private String postId;
+	private LocalDateTime postTime;
 	
 	private List<PostComment> comments;
 	private HashMap<String, Integer> votes;
@@ -48,5 +50,11 @@ public class PostData {
 	}
 	public void setFavorites(HashSet<String> favorites) {
 		this.favorites = favorites;
+	}
+	public LocalDateTime getPostTime() {
+		return postTime;
+	}
+	public void setPostTime(LocalDateTime postTime) {
+		this.postTime = postTime;
 	}
 }

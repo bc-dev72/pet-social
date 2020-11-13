@@ -9,7 +9,6 @@ public class UpdaterProtection {
 	
 
 	public static synchronized boolean requestRelease(String type, String postId, boolean release) {
-		
 		if(accessed.get(type) == null)
 			accessed.put(type, new HashSet<>());
 		

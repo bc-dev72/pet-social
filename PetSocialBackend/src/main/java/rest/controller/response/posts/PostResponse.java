@@ -15,7 +15,9 @@ public class PostResponse {
 	private int totalFavorites;
 	
 	private List<PostCommentResponse> comments;
-
+	
+	private boolean userPosted;
+	private boolean following;
 	private boolean favorited;
 	
 	public String getPostId() {
@@ -77,5 +79,17 @@ public class PostResponse {
 	}
 	public void setFavorited(boolean favorited) {
 		this.favorited = favorited;
+	}
+	public boolean isUserPosted() {
+		return userPosted;
+	}
+	public void setUserPosted(boolean userPosted) {
+		this.userPosted = userPosted;
+	}
+	public boolean isFollowing() {
+		return following;
+	}
+	public void setFollowing(boolean following) {
+		this.following = following;
 	}
 }

@@ -12,7 +12,7 @@ import rest.controller.response.posts.PostResponse;
 public class FrontEndModelUtil {
 
 	
-	public static PostResponse createPostResponse(String accountId, Post post, PostData postData) {
+	public static PostResponse createPostResponse(String accountId, Post post, PostData postData, boolean isFollowed) {
 		PostResponse response = new PostResponse();
 		response.setDesc(post.getDescription());
 		response.setImage(post.getImage());
@@ -46,6 +46,9 @@ public class FrontEndModelUtil {
 		response.setCurrentVote(userVote);
 		response.setTotalFavorites(favoriteCount);
 		response.setFavorited(favorited);
+		
+		response.setUserPosted(post.getAccountId().equals(accountId));
+		response.setFollowing(isFollowed);
 		
 		return response;
 	}

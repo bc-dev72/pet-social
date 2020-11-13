@@ -30,7 +30,7 @@ public class AccountController {
 	}
 	
 	@PostMapping("/signin")
-	public ResponseEntity<Object> signUp(@RequestBody SignInRequest request) {
+	public ResponseEntity<Object> signIn(@RequestBody SignInRequest request) {
 		try {
 			return ResponseEntity.ok(accountService.signIn(request));
 		} catch(ServiceError error) {

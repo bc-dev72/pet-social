@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import commons.model.post.Post;
 import commons.model.post.PostComment;
 import commons.model.post.PostData;
+import repo.AccountDetailsRepo;
 import repo.PostDataRepo;
 import repo.PostRepo;
 import rest.controller.request.posts.PostCommentRequest;
@@ -23,6 +24,7 @@ import security.util.TokenAccountData;
 import service.error.NotFoundError;
 import service.error.ServiceError;
 import util.FrontEndModelUtil;
+import util.thread.DataCache;
 import util.thread.UpdaterProtection;
 
 @Service
@@ -60,7 +62,7 @@ public class PostService {
 		postDataRepo.save(postData);
 		postRepo.save(post);
 		
-		return FrontEndModelUtil.createPostResponse(tokenData.getAccountId(), post, postData);
+		return FrontEndModelUtil.createPostResponse(tokenData.getAccountId(), post, postData, isFollowingUser(tokenData, post.getUserPosted()));
 	}
 	
 	public void deletePost(TokenAccountData tokenData, String postId) throws ServiceError, NotFoundError {
@@ -81,20 +83,6 @@ public class PostService {
 		if(postData != null)
 			postDataRepo.delete(postData);
 		this.releaseAccess(postId);
-	}
-	
-	public PostResponse getPost(TokenAccountData tokenData, String postId) throws ServiceError, NotFoundError {
-		if(tokenData == null) {
-			tokenData = new TokenAccountData();
-			tokenData.setAccountId("");
-		}
-		
-		Post post = postRepo.findByPostId(postId);
-		PostData postData = this.getPostData(postId);
-		
-		if(post == null)
-			throw new NotFoundError("Not found");
-		return FrontEndModelUtil.createPostResponse(tokenData.getAccountId(), post, postData);
 	}
 	
 	public PostResponse votePost(TokenAccountData tokenData, String postId, PostVoteRequest request) throws ServiceError, NotFoundError {
@@ -118,7 +106,7 @@ public class PostService {
 		
 		postDataRepo.save(postData);
 		this.releaseAccess(postId);
-		return FrontEndModelUtil.createPostResponse(tokenData.getAccountId(), post, postData);
+		return FrontEndModelUtil.createPostResponse(tokenData.getAccountId(), post, postData, isFollowingUser(tokenData, post.getUserPosted()));
 	}
 	
 	public PostResponse makeComment(TokenAccountData tokenData, String postId, PostCommentRequest request) throws ServiceError, NotFoundError{
@@ -148,7 +136,7 @@ public class PostService {
 		
 		postDataRepo.save(postData);
 		this.releaseAccess(postId);
-		return FrontEndModelUtil.createPostResponse(tokenData.getAccountId(), post, postData);
+		return FrontEndModelUtil.createPostResponse(tokenData.getAccountId(), post, postData, isFollowingUser(tokenData, post.getUserPosted()));
 	}
 	
 	public PostResponse favoritePost(TokenAccountData tokenData, String postId, PostFavoriteRequest request) throws ServiceError, NotFoundError {
@@ -168,7 +156,7 @@ public class PostService {
 
 		postDataRepo.save(postData);
 		this.releaseAccess(postId);
-		return FrontEndModelUtil.createPostResponse(tokenData.getAccountId(), post, postData);
+		return FrontEndModelUtil.createPostResponse(tokenData.getAccountId(), post, postData, isFollowingUser(tokenData, post.getUserPosted()));
 	}
 	
 	private void getAccess(String postId) {
@@ -193,6 +181,11 @@ public class PostService {
 			postData.setVotes(new HashMap<>());
 		}
 		return postData;
+	}
+	
+	private boolean isFollowingUser(TokenAccountData tokenData, String userPosted) {
+		HashSet<String> authedUserFollowerMap = (HashSet<String>) DataCache.getData(DataCache.START_FOLLOWERS+tokenData.getAccountId());
+		return authedUserFollowerMap.contains(userPosted);
 	}
 
 }
